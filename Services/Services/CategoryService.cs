@@ -1,8 +1,10 @@
 ﻿using Data;
 using Entity;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,13 +13,18 @@ namespace Services
     public class CategoryService : ICategoryService
     {
         private ReadLaterDataContext _ReadLaterDataContext;
-        public CategoryService(ReadLaterDataContext readLaterDataContext) 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private string userId;
+        public CategoryService(ReadLaterDataContext readLaterDataContext, IHttpContextAccessor httpContextAccessor) 
         {
-            _ReadLaterDataContext = readLaterDataContext;            
+            _ReadLaterDataContext = readLaterDataContext;
+            _httpContextAccessor = httpContextAccessor;
+            userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
 
         public Category CreateCategory(Category category)
         {
+            category.UserId = userId;
             _ReadLaterDataContext.Add(category);
             _ReadLaterDataContext.SaveChanges();
             return category;
@@ -31,17 +38,17 @@ namespace Services
 
         public List<Category> GetCategories()
         {
-            return _ReadLaterDataContext.Categories.ToList();
+            return _ReadLaterDataContext.Categories.Where(c => c.UserId == userId).ToList();
         }
 
         public Category GetCategory(int Id)
         {
-            return _ReadLaterDataContext.Categories.Where(c => c.ID == Id).FirstOrDefault();
+            return _ReadLaterDataContext.Categories.Where(c => c.ID == Id && c.UserId == userId).FirstOrDefault();
         }
 
         public Category GetCategory(string Name)
         {
-            return _ReadLaterDataContext.Categories.Where(c => c.Name == Name).FirstOrDefault();
+            return _ReadLaterDataContext.Categories.Where(c => c.Name == Name && c.UserId == userId).FirstOrDefault();
         }
 
         public void DeleteCategory(Category category)

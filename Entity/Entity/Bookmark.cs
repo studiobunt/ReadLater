@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +23,12 @@ namespace Entity
 
         public virtual Category Category { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy HH:mm:ss}")]
         public DateTime CreateDate { get; set; }
+
+        public string UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual IdentityUser ApplicationUser { get; set; }
     }
 }

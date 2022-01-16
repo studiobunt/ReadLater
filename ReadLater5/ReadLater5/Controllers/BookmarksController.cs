@@ -1,7 +1,6 @@
 ﻿using Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Services;
 using System;
 using System.Collections.Generic;
@@ -12,75 +11,56 @@ using System.Threading.Tasks;
 namespace ReadLater5.Controllers
 {
     [Authorize]
-    public class CategoriesController : Controller
+    public class BookmarksController : Controller
     {
-        ICategoryService _categoryService;
-        public CategoriesController(ICategoryService categoryService)
+        IBookmarkService _bookmarkService;
+        public BookmarksController(IBookmarkService bookmarkService)
         {
-            _categoryService = categoryService;
+            _bookmarkService = bookmarkService;
         }
-        // GET: Categories
+        // GET: Bookmarks
         public IActionResult Index()
         {
-            List<Category> model = _categoryService.GetCategories();
+            List<Bookmark> model = _bookmarkService.GetBookmarks();
             return View(model);
         }
 
-        public IActionResult GetCategories()
-        {
-            List<Category> model = _categoryService.GetCategories();
-            var categoryList = (from category in model
-                                select new SelectListItem()
-                                {
-                                    Text = category.Name,
-                                    Value = category.ID.ToString(),
-                                }).ToList();
-
-            categoryList.Insert(0, new SelectListItem()
-            {
-                Text = "----Select----",
-                Value = string.Empty
-            });
-
-            return Json(categoryList);
-        }
-
-        // GET: Categories/Details/5
+        // GET: Bookmarks/Details/5
         public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest);
             }
-            Category category = _categoryService.GetCategory((int)id);
-            if (category == null)
+            Bookmark bookmark = _bookmarkService.GetBookmark((int)id);
+            if (bookmark == null)
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound);
             }
-            return View(category);
+            return View(bookmark);
 
         }
 
-        // GET: Categories/Create
+        // GET: Bookmarks/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Categories/Create
+        // POST: Bookmarks/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Category category)
+        public IActionResult Create(Bookmark bookmark)
         {
             if (ModelState.IsValid)
             {
-                _categoryService.CreateCategory(category);
+                _bookmarkService.CreateBookmark(bookmark);
                 return RedirectToAction("Index");
             }
 
-            return View(category);
+            return View(bookmark);
         }
 
         // GET: Categories/Edit/5
@@ -90,12 +70,12 @@ namespace ReadLater5.Controllers
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest);
             }
-            Category category = _categoryService.GetCategory((int)id);
-            if (category == null)
+            Bookmark bookmark = _bookmarkService.GetBookmark((int)id);
+            if (bookmark == null)
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound);
             }
-            return View(category);
+            return View(bookmark);
         }
 
         // POST: Categories/Edit/5
@@ -103,14 +83,14 @@ namespace ReadLater5.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Category category)
+        public IActionResult Edit(Bookmark bookmark)
         {
             if (ModelState.IsValid)
             {
-                _categoryService.UpdateCategory(category);
+                _bookmarkService.UpdateBookmark(bookmark);
                 return RedirectToAction("Index");
             }
-            return View(category);
+            return View(bookmark);
         }
 
         // GET: Categories/Delete/5
@@ -120,12 +100,12 @@ namespace ReadLater5.Controllers
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest);
             }
-            Category category = _categoryService.GetCategory((int)id);
-            if (category == null)
+            Bookmark bookmark = _bookmarkService.GetBookmark((int)id);
+            if (bookmark == null)
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound);
             }
-            return View(category);
+            return View(bookmark);
         }
 
         // POST: Categories/Delete/5
@@ -133,8 +113,8 @@ namespace ReadLater5.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Category category = _categoryService.GetCategory(id);
-            _categoryService.DeleteCategory(category);
+            Bookmark bookmark = _bookmarkService.GetBookmark(id);
+            _bookmarkService.DeleteBookmark(bookmark);
             return RedirectToAction("Index");
         }
     }
